@@ -53,11 +53,11 @@ public class Blackjack {
   int playerAceCount;
 
   //Window
-  int boardWidth = 600;
-  int boardHeight = 600;
+  int boardWidth = 1000;
+  int boardHeight = 1000;
 
-  int cardWidth = 110; //Ratio should be 1/1.4
-  int cardHeight = 154;
+  int cardWidth = 160; //Ratio should be 1/1.4
+  int cardHeight = 224;
 
   JFrame frame = new JFrame("Blackjack");
   JPanel gamePanel = new JPanel() {
@@ -65,26 +65,31 @@ public class Blackjack {
     public void paintComponent(Graphics g) {
       super.paintComponent(g);
 
+      g.setFont(new Font("Arial", Font.PLAIN, 30));
+      g.setColor(Color.white);
+      g.drawString("Dealer's hand:", 50, 60);
+      g.drawString("Your hand:", 50, 550);
+
       try {
         //Draw hidden card
         Image hiddenCardImg = new ImageIcon(getClass().getResource("./cards/BACK.png")).getImage();
         if (!stayButton.isEnabled()) {
-          hiddenCardImg = new  ImageIcon(getClass().getResource(hiddenCard.getImagePath())).getImage();
+          hiddenCardImg = new ImageIcon(getClass().getResource(hiddenCard.getImagePath())).getImage();
         }
-        g.drawImage(hiddenCardImg, 20, 20, cardWidth, cardHeight, null);
+        g.drawImage(hiddenCardImg, 50, 100, cardWidth, cardHeight, null);
 
         //Draw dealer's hand
         for (int i = 0; i < dealerHand.size(); i++) {
           Card card = dealerHand.get(i);
           Image cardImg = new ImageIcon(getClass().getResource(card.getImagePath())).getImage();
-          g.drawImage(cardImg, cardWidth + 25 + (cardWidth + 5)*i, 20, cardWidth, cardHeight, null);
+          g.drawImage(cardImg, cardWidth + 55 + (cardWidth + 5)*i, 100, cardWidth, cardHeight, null);
         }
 
         //Draw player's hand
         for (int i = 0; i < playerHand.size(); i++) {
           Card card = playerHand.get(i);
           Image cardImg = new ImageIcon(getClass().getResource(card.getImagePath())).getImage();
-          g.drawImage(cardImg, 25 + (cardWidth + 5)*i, 320, cardWidth, cardHeight, null);
+          g.drawImage(cardImg, 50 + (cardWidth + 5)*i, 590, cardWidth, cardHeight, null);
         }
 
         if (!stayButton.isEnabled()) {
@@ -95,7 +100,10 @@ public class Blackjack {
           System.out.println(playerSum);
 
           String message = "";
-          if (playerSum > 21) {
+          if (playerSum > 21 && dealerSum > 21) {
+            message = "Tie!";
+          }
+          else if (playerSum > 21) {
             message = "You Lose!";
           }
           else if (dealerSum > 21) {
@@ -114,7 +122,7 @@ public class Blackjack {
 
           g.setFont(new Font("Arial", Font.PLAIN, 30));
           g.setColor(Color.white);
-          g.drawString(message, 220, 250);
+          g.drawString(message, 220, 450);
         }
 
       } catch (Exception e) {
@@ -163,7 +171,7 @@ public class Blackjack {
         hitButton.setEnabled(false);
         stayButton.setEnabled(false);
 
-        while (dealerSum < playerSum) {
+        while (dealerSum < playerSum && playerSum <= 21) {
           Card card = deck.remove(deck.size()-1);
           dealerSum += card.getValue();
           dealerAceCount += card.isAce() ? 1 : 0;
