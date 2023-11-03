@@ -133,6 +133,7 @@ public class Blackjack {
   JPanel buttonPanel = new JPanel();
   JButton hitButton = new JButton("Hit");
   JButton stayButton = new JButton("Stay");
+  JButton resetButton = new JButton("Reset");
 
   Blackjack() {
     startGame();
@@ -151,6 +152,8 @@ public class Blackjack {
     buttonPanel.add(hitButton);
     stayButton.setFocusable(false);
     buttonPanel.add(stayButton);
+    resetButton.setFocusable(false);
+    buttonPanel.add(resetButton);
     frame.add(buttonPanel, BorderLayout.SOUTH);
 
     hitButton.addActionListener(new ActionListener() {
@@ -178,6 +181,13 @@ public class Blackjack {
           dealerHand.add(card);
           dealerSum = reduceDealerAce();
         }
+        gamePanel.repaint();
+      }
+    });
+
+    resetButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        startGame();
         gamePanel.repaint();
       }
     });
