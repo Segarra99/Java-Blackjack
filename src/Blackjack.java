@@ -34,7 +34,7 @@ public class Blackjack {
     }
 
     public String getImagePath() {
-      return "./cards/" + toString() + ".png";
+      return "/cards/" + toString() + ".png";
     }
   }
 
@@ -51,6 +51,13 @@ public class Blackjack {
   ArrayList<Card> playerHand;
   int playerSum;
   int playerAceCount;
+
+  //Money
+  int playerMoney = 10;
+  int betMoney = 0;
+
+  //Message
+  String message = "";
 
   //Window
   int boardWidth = 1000;
@@ -69,10 +76,12 @@ public class Blackjack {
       g.setColor(Color.white);
       g.drawString("Dealer's hand:", 50, 60);
       g.drawString("Your hand:", 50, 550);
+      g.drawString("Money: " + String.valueOf(playerMoney), 50, 860);
+      g.drawString("Bet: " + String.valueOf(betMoney), 50, 910);
 
       try {
         //Draw hidden card
-        Image hiddenCardImg = new ImageIcon(getClass().getResource("./cards/BACK.png")).getImage();
+        Image hiddenCardImg = new ImageIcon(getClass().getResource("/cards/BACK.png")).getImage();
         if (!stayButton.isEnabled()) {
           hiddenCardImg = new ImageIcon(getClass().getResource(hiddenCard.getImagePath())).getImage();
         }
@@ -99,30 +108,45 @@ public class Blackjack {
           System.out.println(dealerSum);
           System.out.println(playerSum);
 
-          String message = "";
           if (playerSum > 21 && dealerSum > 21) {
             message = "Tie!";
+            playerMoney += betMoney;
+            betMoney = 0;
+            gamePanel.repaint();
           }
           else if (playerSum > 21) {
             message = "You Lose!";
+            betMoney = 0;
+            gamePanel.repaint();
           }
           else if (dealerSum > 21) {
             message = "You Win!";
+            playerMoney += betMoney * 2;
+            betMoney = 0;
+            gamePanel.repaint();
           }
           //Both you and the dealer both have <= 21
           else if (playerSum == dealerSum) {
             message = "Tie!";
+            playerMoney += betMoney;
+            betMoney = 0;
+            gamePanel.repaint();
           }
           else if (playerSum > dealerSum) {
             message = "You Win!";
+            playerMoney += betMoney * 2;
+            betMoney = 0;
+            gamePanel.repaint();
           }
           else if (playerSum < dealerSum) {
             message = "You Lose!";
+            betMoney = 0;
+            gamePanel.repaint();
           }
 
           g.setFont(new Font("Arial", Font.PLAIN, 30));
           g.setColor(Color.white);
-          g.drawString(message, 220, 450);
+          g.drawString(message, 420, 450);
         }
 
       } catch (Exception e) {
@@ -134,6 +158,8 @@ public class Blackjack {
   JButton hitButton = new JButton("Hit");
   JButton stayButton = new JButton("Stay");
   JButton resetButton = new JButton("Reset");
+  JButton plusButton = new JButton("+");
+  JButton minusButton = new JButton("-");
 
   Blackjack() {
     startGame();
@@ -147,7 +173,11 @@ public class Blackjack {
     gamePanel.setLayout(new BorderLayout());
     gamePanel.setBackground(new Color(53, 101, 77));
     frame.add(gamePanel);
-
+    
+    minusButton.setFocusable(false);
+    buttonPanel.add(minusButton);
+    plusButton.setFocusable(false);
+    buttonPanel.add(plusButton);
     hitButton.setFocusable(false);
     buttonPanel.add(hitButton);
     stayButton.setFocusable(false);
@@ -187,8 +217,31 @@ public class Blackjack {
 
     resetButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        message = "";
+        hitButton.setEnabled(true);
+        stayButton.setEnabled(true);
         startGame();
         gamePanel.repaint();
+      }
+    });
+
+    minusButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (betMoney > 0) {
+          betMoney -= 1;
+          playerMoney += 1;
+          gamePanel.repaint();
+        }
+      }
+    });
+
+    plusButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (playerMoney > 0) {
+          betMoney += 1;
+          playerMoney -= 1;
+          gamePanel.repaint();
+        }
       }
     });
 
